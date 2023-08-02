@@ -14,22 +14,30 @@ on:
       - '**.go'
   
 jobs:
-  generate:
-    name: Generate
+  terraformfmt:
+    name: Install Terraform
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3 # v3.5.0
       - uses: actions/setup-go@v4.0.1 # v4.0.0
         with:
           go-version-file: 'go.mod'
-      - name: Install Terraform
-        run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt-get update && sudo apt-get install terraform
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3
       - name: Format Terraform files
         run: |
           find examples -name "*.tf" -exec terraform fmt {} \;
+          
+  generate:
+    name: Generate
+    runs-on: ubuntu-latest
+    needs: [terraformfmt]
+    steps:
+      - uses: actions/checkout@v3 # v3.5.0
+      - uses: actions/setup-go@v4.0.1 # v4.0.0
+        with:
+          go-version-file: 'go.mod'
       - run: make generate
       - name: git diff
         run: |
