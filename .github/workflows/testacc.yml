@@ -22,9 +22,12 @@ jobs:
         reaction-type: "rocket"
         allow-edits: "false"
         permission-level: write
-    - uses: actions/checkout@v3
-      with:
-        ref: refs/pull/${{ github.event.issue.number }}/head
+    - id: 'get-branch'
+      run: echo ::set-output name=branch::$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')
+      env:
+        REPO: ${{ github.repository }}
+        PR_NO: ${{ github.event.issue.number }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/setup-go@v4.0.1 # v4.0.0
       with:
         go-version-file: 'go.mod'
@@ -42,9 +45,12 @@ jobs:
         terraform:
           - '1.3.*'
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+      - id: 'get-branch'
+        run: echo ::set-output name=branch::$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')
+        env:
+          REPO: ${{ github.repository }}
+          PR_NO: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v4.0.1 # v4.0.0
         with:
           go-version-file: 'go.mod'
