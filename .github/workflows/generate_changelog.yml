@@ -30,4 +30,4 @@
 #             git add CHANGELOG.md
 #             git commit -m "$MSG"
 #             git push
-#           fi
+#           fi a
